@@ -19,12 +19,12 @@ import {
   TrayIcon,
   XCircleIcon,
 } from "@phosphor-icons/react";
-import { Link, useLoaderData, useLocation, useRouter } from "@tanstack/react-router";
+import { Link, useLoaderData, useLocation } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 
 import Logo from "@/components/logo";
-import { authClient } from "@/lib/auth-client";
+import { useAuthClient } from "@/lib/auth-client";
 import { myWorkspaces } from "@/functions/admin";
 import { isDemo } from "@/lib/demo";
 import { workspaceUrl } from "@/lib/workspace-url";
@@ -160,8 +160,8 @@ export function AdminSidebar({ onNewPost, onCollapse }: { onNewPost?: () => void
 }
 
 function AccountMenu({ children }: { children: ReactNode }) {
+  const authClient = useAuthClient();
   const root = useLoaderData({ from: "__root__" });
-  const router = useRouter();
   return (
     <div className="flex flex-col gap-0.5 border-t pt-3">
       {children}
@@ -174,14 +174,10 @@ function AccountMenu({ children }: { children: ReactNode }) {
         <DropdownMenuContent align="start" side="top" className="min-w-48">
           <DropdownMenuItem
             onClick={() =>
-              authClient.signOut({
-                fetchOptions: {
-                  onSuccess: () => router.invalidate().then(() => router.navigate({ to: "/login" })),
-                },
-              })
+              authClient.signOut()
             }
           >
-            <SignOutIcon className="size-4" /> Sign out
+            <SignOutIcon className="size-4" /> Sign out of RangerOS
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -279,9 +275,9 @@ function Item({
 
 // 56px rail: same destinations as the full sidebar, icons only, titles on hover.
 export function AdminRail({ onExpand, onNewPost }: { onExpand?: () => void; onNewPost?: () => void }) {
+  const authClient = useAuthClient();
   const { pathname } = useLocation();
   const root = useLoaderData({ from: "__root__" });
-  const router = useRouter();
   const inInbox = pathname.startsWith("/dashboard/inbox");
   const cls = (on: boolean) => cn("inline-flex size-9 items-center justify-center rounded-lg active:scale-95", on ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-accent/60 hover:text-foreground");
   return (
@@ -343,14 +339,10 @@ export function AdminRail({ onExpand, onNewPost }: { onExpand?: () => void; onNe
         <DropdownMenuContent align="start" side="right" className="min-w-40">
           <DropdownMenuItem
             onClick={() =>
-              authClient.signOut({
-                fetchOptions: {
-                  onSuccess: () => router.invalidate().then(() => router.navigate({ to: "/login" })),
-                },
-              })
+              authClient.signOut()
             }
           >
-            <SignOutIcon className="size-4" /> Sign out
+            <SignOutIcon className="size-4" /> Sign out of RangerOS
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

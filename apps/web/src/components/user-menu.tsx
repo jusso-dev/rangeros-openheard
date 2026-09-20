@@ -9,15 +9,15 @@ import {
   DropdownMenuTrigger,
 } from "@openheard/ui/components/dropdown-menu";
 import { GearSixIcon } from "@phosphor-icons/react";
-import { Link, useLoaderData, useRouter } from "@tanstack/react-router";
+import { Link, useLoaderData } from "@tanstack/react-router";
 
-import { authClient } from "@/lib/auth-client";
+import { useAuthClient } from "@/lib/auth-client";
 import { DEMO_ADMIN_ID, isDemo } from "@/lib/demo";
 
 import { Avatar } from "./bits";
 
 export default function UserMenu() {
-  const router = useRouter();
+  const authClient = useAuthClient();
   const data = useLoaderData({ from: "__root__" });
   const user = data?.user;
 
@@ -61,10 +61,10 @@ export default function UserMenu() {
           ) : null}
           <DropdownMenuItem
             onClick={() =>
-              authClient.signOut({ fetchOptions: { onSuccess: () => router.invalidate().then(() => router.navigate({ to: "/" })) } })
+              authClient.signOut()
             }
           >
-            Sign out
+            Sign out of RangerOS
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

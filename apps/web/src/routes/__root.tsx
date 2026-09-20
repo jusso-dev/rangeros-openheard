@@ -1,3 +1,6 @@
+import { ClerkSessionSync } from "../components/clerk-session-sync";
+import { ClerkProvider } from "@clerk/tanstack-react-start";
+import { clerkConfig } from "../lib/clerk-config";
 import { Toaster } from "@openheard/ui/components/sonner";
 import { HeadContent, Outlet, Scripts, ScrollRestoration, createRootRouteWithContext, useRouterState } from "@tanstack/react-router";
 
@@ -84,6 +87,8 @@ function RootDocument() {
         <HeadContent />
       </head>
       <body>
+        <ClerkProvider {...clerkConfig}>
+        <ClerkSessionSync />
         {admin ? (
           <div className="h-dvh overflow-hidden">
             <Outlet />
@@ -106,6 +111,7 @@ function RootDocument() {
         <SignInDialog />
         <Toaster position="bottom-right" />
         <ScrollRestoration />
+        </ClerkProvider>
         <Scripts />
       </body>
     </html>

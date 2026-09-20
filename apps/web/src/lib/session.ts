@@ -87,7 +87,7 @@ export async function workspaceFromRequest(request: Request): Promise<Workspace 
 const ctxCache = new WeakMap<Request, Promise<{ user: SessionUser | null; workspace: Workspace; marketing: boolean }>>();
 
 async function resolveSession(request: Request) {
-  const [{ createDb, membership, workspace }, { createAuth }] = await Promise.all([import("@openheard/db"), import("@openheard/auth")]);
+  const [{ createDb, membership, workspace }, { resolveClerkUser }] = await Promise.all([import("@openheard/db"), import("./clerk-user")]);
   const db = createDb();
   const host = request.headers.get("host") ?? "";
   const root = await rootDomain();
@@ -96,7 +96,7 @@ async function resolveSession(request: Request) {
 
   const [wsResult, session] = await Promise.all([
     db.select().from(workspace).where(eq(workspace.id, slug)).limit(1),
-    createAuth({ demo: slug === DEMO_WORKSPACE_ID }).api.getSession({ headers: request.headers }),
+    resolveClerkUser().then((user) => user ? { user } : null),
   ]);
 
   let [ws] = wsResult;
@@ -116,6 +116,7 @@ async function resolveSession(request: Request) {
 
   let user: SessionUser | null = null;
   if (session) {
+    await db.insert(membership).values({ workspaceId: ws.id, userId: session.user.id, role: "member", notifyNewPost: session.user.emailVerified, notifyComment: session.user.emailVerified }).onConflictDoNothing();
     const [m] = await db
       .select({ role: membership.role })
       .from(membership)
