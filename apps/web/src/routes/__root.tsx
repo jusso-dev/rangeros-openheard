@@ -1,3 +1,6 @@
+import { ClerkSessionSync } from "../components/clerk-session-sync";
+import { ClerkProvider } from "@clerk/tanstack-react-start";
+import { clerkConfig } from "../lib/clerk-config";
 import { Toaster } from "@openheard/ui/components/sonner";
 import { HeadContent, Outlet, Scripts, ScrollRestoration, createRootRouteWithContext, useRouterState } from "@tanstack/react-router";
 
@@ -84,6 +87,9 @@ function RootDocument() {
         <HeadContent />
       </head>
       <body>
+        <ClerkProvider {...clerkConfig}>
+        <ClerkSessionSync />
+        {data?.authError ? <p role="alert" className="border-b bg-card p-4 text-center text-sm">{data.authError} You can still browse feedback.</p> : null}
         {admin ? (
           <div className="h-dvh overflow-hidden">
             <Outlet />
@@ -106,6 +112,7 @@ function RootDocument() {
         <SignInDialog />
         <Toaster position="bottom-right" />
         <ScrollRestoration />
+        </ClerkProvider>
         <Scripts />
       </body>
     </html>

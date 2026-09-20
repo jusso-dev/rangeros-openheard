@@ -27,7 +27,8 @@
   ],
   "vars": {
     "BETTER_AUTH_URL": "https://feedback.rangeros.com.au",
-    "ROOT_DOMAIN": ""
+    "ROOT_DOMAIN": "",
+    "CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsucmFuZ2Vyb3MuY29tLmF1JA"
   },
   "observability": {
     "enabled": true

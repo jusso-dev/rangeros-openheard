@@ -12,7 +12,7 @@ type Search = { redirect?: string };
 
 export const Route = createFileRoute("/login")({
   validateSearch: (s: Record<string, unknown>): Search => ({
-    redirect: typeof s.redirect === "string" ? s.redirect : undefined,
+    redirect: typeof s.redirect === "string" && /^\/(?![\/\\])/.test(s.redirect) ? s.redirect : undefined,
   }),
   beforeLoad: async ({ search }) => {
     const [user, root] = await Promise.all([getUser(), getWorkspace()]);

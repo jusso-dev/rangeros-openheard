@@ -71,6 +71,7 @@ export const getWorkspace = createServerFn({ method: "GET" })
         statusCounts: {} as Record<string, number>,
         total: 0,
         user: context.user,
+      authError: context.authError,
         ownWorkspaces,
         googleSignIn: await googleSignIn(),
       };
@@ -83,6 +84,7 @@ export const getWorkspace = createServerFn({ method: "GET" })
       marketing: context.marketing,
       ...data,
       user: context.user,
+      authError: context.authError,
       googleSignIn: await googleSignIn(),
     };
   });

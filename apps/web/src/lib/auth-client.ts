@@ -1,6 +1,5 @@
-import { createAuthClient } from "better-auth/react";
-import { magicLinkClient } from "better-auth/client/plugins";
-
-export const authClient = createAuthClient({
-  plugins: [magicLinkClient()],
-});
+import { useClerk } from "@clerk/tanstack-react-start";
+export function useAuthClient() {
+  const clerk = useClerk();
+  return { signOut: async () => { await clerk.signOut({ redirectUrl: "/" }); } };
+}

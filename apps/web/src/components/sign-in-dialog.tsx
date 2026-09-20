@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "@openheard/ui/components/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@openheard/ui/components/dialog";
 import { useLoaderData, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
 
@@ -29,6 +29,7 @@ export function SignInDialog() {
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) closeSignIn(); }}>
       <DialogContent className="max-w-[380px]">
+        <DialogTitle className="sr-only">Sign in with RangerOS</DialogTitle>
         <AuthForm
           wsName={wsName}
           hasGoogle={hasGoogle}

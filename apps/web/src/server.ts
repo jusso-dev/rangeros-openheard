@@ -1,19 +1,8 @@
 import { createStartHandler, defaultStreamHandler } from "@tanstack/react-start/server";
-import { hasSessionCookie, isPrivatePath, isPublicCacheable } from "./lib/cache";
 
 const handler = createStartHandler(defaultStreamHandler);
 
 const REQUEST_TIMEOUT_MS = 25_000;
-const MAX_CACHEABLE_BODY = 2 * 1024 * 1024;
-
-function getEdgeCache(): Cache | null {
-  try {
-    return (caches as unknown as { default: Cache }).default;
-  } catch {
-    return null;
-  }
-}
-
 const SECURITY_HEADERS: Record<string, string> = {
   "strict-transport-security": "max-age=31536000; includeSubDomains",
   "x-content-type-options": "nosniff",
@@ -29,8 +18,8 @@ function secure(response: Response): Response {
 }
 
 export default {
-  async fetch(request: Request, _env: unknown, ctx: ExecutionContext) {
-    return secure(await handle(request, ctx));
+  async fetch(request: Request, _env: unknown, _ctx: ExecutionContext) {
+    return secure(await handle(request));
   },
   // Nightly: the public demo workspace goes back to its seed. Bindings come
   // from `cloudflare:workers`, which is live in a scheduled invocation too.
@@ -45,64 +34,13 @@ export default {
   },
 };
 
-async function handle(request: Request, ctx: ExecutionContext): Promise<Response> {
+async function handle(request: Request): Promise<Response> {
   const url = new URL(request.url);
-  const cache = getEdgeCache();
-
-  if (
-    cache &&
-    request.method === "GET" &&
-    !hasSessionCookie(request) &&
-    isPublicCacheable(url.pathname)
-  ) {
-    const cacheKey = new Request(url.toString(), { method: "GET" });
-    const cached = await cache.match(cacheKey);
-    if (cached) {
-      const resp = new Response(cached.body, cached);
-      resp.headers.set("x-cache", "HIT");
-      resp.headers.set("cache-control", "public, max-age=0, s-maxage=60");
-      return resp;
-    }
-
-    const response = await bounded(request, url);
-
-    if (response.status === 200) {
-      const contentLength = parseInt(response.headers.get("content-length") ?? "", 10);
-      const tooLarge = !isNaN(contentLength) && contentLength > MAX_CACHEABLE_BODY;
-
-      if (!tooLarge) {
-        const body = await response.arrayBuffer();
-
-        if (body.byteLength <= MAX_CACHEABLE_BODY) {
-          const stored = new Response(body, response);
-          stored.headers.set("cache-control", "public, s-maxage=60");
-          stored.headers.delete("set-cookie");
-          stored.headers.delete("vary");
-          ctx.waitUntil(cache.put(cacheKey, stored));
-        }
-
-        const out = new Response(body, response);
-        out.headers.set("x-cache", "MISS");
-        out.headers.set("cache-control", "public, max-age=0, s-maxage=60");
-        return out;
-      }
-    }
-
-    const out = new Response(response.body, response);
-    out.headers.set("x-cache", "MISS");
-    out.headers.set("cache-control", "public, max-age=0, s-maxage=60");
-    return out;
-  }
-
+  // Clerk handshake and session refresh must run even on public pages.
   const response = await bounded(request, url);
-
-  if (isPrivatePath(url.pathname) || hasSessionCookie(request)) {
-    const out = new Response(response.body, response);
-    out.headers.set("cache-control", "private, no-store");
-    return out;
-  }
-
-  return response;
+  const out = new Response(response.body, response);
+  out.headers.set("cache-control", "private, no-store");
+  return out;
 }
 
 function bounded(request: Request, url: URL): Promise<Response> {
