@@ -61,3 +61,7 @@ temp
 
 # Private working notes (AI-written md files, never published)
 /notes/
+
+# Wrangler local state
+.wrangler/
+.dev.vars

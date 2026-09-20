@@ -37,6 +37,9 @@ export default defineConfig({
       : {},
   },
   ssr: {
+    target: local ? "node" : "webworker",
+    resolve: { conditions: local ? ["node"] : ["workerd", "module", "browser"] },
+    noExternal: local ? undefined : true,
     // native sqlite driver stays external in local mode
     external: ["@libsql/client", "libsql"],
   },

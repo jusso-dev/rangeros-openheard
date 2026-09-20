@@ -36,7 +36,7 @@ export const Route = createFileRoute("/api/email-test")({
         try {
           const result = await binding.send({
             to,
-            from: { email: "hello@openheard.com", name: "openheard" },
+            from: { email: "noreply@feedback.rangeros.com.au", name: "RangerOS feedback" },
             subject: "openheard email test",
             text: "If you see this, the EMAIL binding works.",
             html: "<p>If you see this, the <strong>EMAIL</strong> binding works.</p>",

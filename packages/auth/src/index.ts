@@ -42,7 +42,7 @@ function createKvSecondaryStorage(store: KV): SecondaryStorage {
   };
 }
 
-const AUTH_FROM = { email: "hello@openheard.com", name: "openheard" };
+const AUTH_FROM = { email: "noreply@feedback.rangeros.com.au", name: "RangerOS feedback" };
 
 async function authSendEmail(to: string, subject: string, html: string, text: string) {
   try {
