@@ -1,0 +1,46 @@
+{
+  "name": "rangeros-feedback",
+  "account_id": "3eed46cc48f123cdff00d116df5e5070",
+  "main": "apps/web/dist/server/server.js",
+  "compatibility_date": "2026-09-20",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "apps/web/dist/client"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "rangeros-feedback",
+      "database_id": "01e02eae-ca62-492c-9b8f-fa633223ec99",
+      "migrations_dir": "packages/db/migrations"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      "id": "c1f6d27cc0cb49d3b820f98471684d54"
+    }
+  ],
+  "vars": {
+    "BETTER_AUTH_URL": "https://feedback.rangeros.com.au",
+    "ROOT_DOMAIN": ""
+  },
+  "observability": {
+    "enabled": true
+  },
+  "routes": [
+    {
+      "pattern": "feedback.rangeros.com.au",
+      "custom_domain": true
+    }
+  ],
+  "send_email": [
+    {
+      "name": "EMAIL"
+    }
+  ]
+}

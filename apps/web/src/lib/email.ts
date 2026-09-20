@@ -1,4 +1,4 @@
-const FROM = { email: "hello@openheard.com", name: "openheard" };
+const FROM = { email: "noreply@feedback.rangeros.com.au", name: "RangerOS feedback" };
 const TEXT_STYLE = 'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;';
 
 function emailLayout(content: string) {

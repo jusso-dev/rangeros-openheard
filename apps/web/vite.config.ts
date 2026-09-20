@@ -37,11 +37,17 @@ export default defineConfig({
       : {},
   },
   ssr: {
+    target: local ? "node" : "webworker",
+    resolve: { conditions: local ? ["node"] : ["workerd", "module", "browser"] },
+    noExternal: !local,
     // native sqlite driver stays external in local mode
     external: ["@libsql/client", "libsql"],
   },
   environments: {
     ssr: {
+    target: local ? "node" : "webworker",
+    resolve: { conditions: local ? ["node"] : ["workerd", "module", "browser"] },
+    noExternal: !local,
       build: {
         // One server file. Split chunks can import each other in a cycle on workerd
         // and evaluate a drizzle table before its base class exists.
