@@ -24,7 +24,7 @@ export const Route = createFileRoute("/login")({
     throw redirect({ to: "/new" });
   },
   loader: () => getWorkspaceMemberCount(),
-  head: () => ({ meta: [{ title: "Sign in · feedback" }] }),
+  head: () => ({ meta: [{ title: "Sign in · RangerOS feedback" }] }),
   component: LoginPage,
 });
 
@@ -34,7 +34,7 @@ function LoginPage() {
   const search = Route.useSearch();
   const memberCount = Route.useLoaderData();
 
-  const wsName = root.workspace?.name ?? "openheard";
+  const wsName = root.workspace?.name ?? "RangerOS";
   const hasGoogle = root.googleSignIn;
   const callbackURL = search.redirect ?? (root.marketing ? "/new" : "/");
 

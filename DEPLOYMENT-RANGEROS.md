@@ -46,3 +46,10 @@ the UI, removed/re-added its vote, and an unauthenticated vote was rejected.
 D1 was checked for the persisted count. Temporary records were then removed.
 Build, typecheck and 19 upstream tests passed. Browser control was unavailable,
 so rendered click-through and email inbox delivery were not verified.
+
+## RangerOS branding
+
+Official mark, wordmark and app icon are copied from RangerOS. The public board,
+sign-in, favicon, link previews and email templates use RangerOS branding.
+Forest and cream match the RangerOS palette; ochre highlights votes and links.
+OpenHeard attribution and the fork source link remain in the footer.

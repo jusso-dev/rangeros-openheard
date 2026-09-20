@@ -3,6 +3,19 @@
 @import "@openheard/ui/globals.css";
 
 .dark {
+  --background: #142a1f;
+  --card: #1c3829;
+  --popover: #1c3829;
+  --foreground: #f5f0e8;
+  --card-foreground: #f5f0e8;
+  --popover-foreground: #f5f0e8;
+  --muted: #1c3829;
+  --accent: #264934;
+  --accent-foreground: #f5f0e8;
+  --border: #355440;
+  --input: #355440;
+  --link: #d99a32;
+  --ring: #d99a32;
   --muted-foreground: #a1a1aa;
   --faint: #85858f;
 }

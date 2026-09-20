@@ -9,12 +9,12 @@ function emailLayout(content: string) {
   <div style="max-width: 520px; margin: 0 auto; padding: 48px 20px;">
     <div style="background: #ffffff; border-radius: 12px; padding: 40px 36px; border: 1px solid #eee;">
       <div style="margin-bottom: 28px;">
-        <span style="${TEXT_STYLE} font-size: 16px; font-weight: 700; color: #111; letter-spacing: -0.3px;">openheard</span>
+        <span style="${TEXT_STYLE} font-size: 16px; font-weight: 700; color: #111; letter-spacing: -0.3px;">RangerOS feedback</span>
       </div>
       ${content}
     </div>
     <p style="${TEXT_STYLE} font-size: 11px; color: #aaa; text-align: center; margin-top: 24px; line-height: 1.6;">
-      openheard &middot; open source feedback board
+      RangerOS feedback &middot; powered by openheard
     </p>
   </div>
 </body>
@@ -46,12 +46,12 @@ export async function sendMagicLinkEmail(to: string, url: string) {
     to,
     "Your sign-in link",
     emailLayout(`
-      <h1 style="${TEXT_STYLE} font-size: 20px; font-weight: 700; color: #111; margin: 0 0 12px;">Sign in to openheard</h1>
+      <h1 style="${TEXT_STYLE} font-size: 20px; font-weight: 700; color: #111; margin: 0 0 12px;">Sign in to RangerOS feedback</h1>
       <p style="${TEXT_STYLE} font-size: 15px; color: #555; line-height: 1.7; margin: 0 0 4px;">Click the button below to sign in. This link expires in 5 minutes.</p>
       ${emailButton(url, "Sign In")}
       <p style="${TEXT_STYLE} font-size: 13px; color: #999; line-height: 1.6; margin: 0;">If you didn't request this, you can safely ignore this email.</p>
     `),
-    `Sign in to openheard\n\nClick the link below to sign in. This link expires in 5 minutes.\n\n${url}\n\nIf you didn't request this, ignore this email.`,
+    `Sign in to RangerOS feedback\n\nClick the link below to sign in. This link expires in 5 minutes.\n\n${url}\n\nIf you didn't request this, ignore this email.`,
   );
 }
 

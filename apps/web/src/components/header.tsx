@@ -37,7 +37,7 @@ export default function Header() {
             <div className="flex h-full items-center gap-3 md:gap-4">
               <Link to="/" className="flex items-center gap-2.5 text-[14px] font-semibold tracking-[-0.01em] text-foreground">
                 <Logo />
-                <span className="hidden sm:inline">{data?.workspace.name ?? "openheard"}</span>
+                <span className="flex flex-col leading-tight"><span>RangerOS</span><span className="text-[10px] font-medium tracking-wide text-muted-foreground">FEEDBACK</span></span>
               </Link>
               <span className="hidden h-4 w-px bg-input lg:block" aria-hidden />
               <nav className="hidden h-full items-center gap-0.5 lg:flex">
