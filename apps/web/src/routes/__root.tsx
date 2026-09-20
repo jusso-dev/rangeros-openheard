@@ -19,7 +19,7 @@ const OPENPANEL_URL = (VITE_ENV.VITE_OPENPANEL_URL ?? "https://openpanel.dev").r
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   loader: () => getWorkspace(),
   head: ({ loaderData }) => {
-    const title = loaderData ? `${loaderData.workspace.name} · feedback` : "openheard";
+    const title = loaderData ? `${loaderData.workspace.name} · feedback` : "RangerOS · feedback";
     const description = loaderData?.workspace.tagline ?? "Open source feedback board.";
     return {
       meta: [
@@ -28,16 +28,16 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
         { title },
         { name: "description", content: description },
         { property: "og:type", content: "website" },
-        { property: "og:site_name", content: "openheard" },
+        { property: "og:site_name", content: "RangerOS · feedback" },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
-        { property: "og:image", content: "https://openheard.com/og.jpg" },
-        { property: "og:image:width", content: "1200" },
-        { property: "og:image:height", content: "630" },
+        { property: "og:image", content: "https://feedback.rangeros.com.au/rangeros_logo.png" },
+        { property: "og:image:width", content: "1536" },
+        { property: "og:image:height", content: "341" },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
-        { name: "twitter:image", content: "https://openheard.com/og.jpg" },
+        { name: "twitter:image", content: "https://feedback.rangeros.com.au/rangeros_logo.png" },
       ],
       links: [
       { rel: "preload", href: geistLatinFont, as: "font", type: "font/woff2", crossOrigin: "anonymous" },

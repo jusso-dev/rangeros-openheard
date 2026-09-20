@@ -6,6 +6,7 @@ export default function Footer() {
   const data = useLoaderData({ from: "__root__" });
   return (
     <footer className="mx-auto flex w-full max-w-[1072px] flex-wrap items-center justify-center gap-x-4 gap-y-2 px-8 pt-4 pb-6 text-xs text-faint">
+      <a href="https://app.rangeros.com.au" className="font-medium text-muted-foreground hover:text-foreground">Back to RangerOS</a>
       <span className="hidden items-center gap-4 md:flex">
         <span className="inline-flex items-center gap-1.5">
           <Kbd>j</Kbd>
