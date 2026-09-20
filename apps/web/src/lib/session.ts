@@ -84,19 +84,19 @@ export async function workspaceFromRequest(request: Request): Promise<Workspace 
   return ws ?? null;
 }
 
-const ctxCache = new WeakMap<Request, Promise<{ user: SessionUser | null; workspace: Workspace; marketing: boolean }>>();
+const ctxCache = new WeakMap<Request, Promise<{ user: SessionUser | null; workspace: Workspace; marketing: boolean; authError: string | null }>>();
 
 async function resolveSession(request: Request) {
-  const [{ createDb, membership, workspace }, { resolveClerkUser }] = await Promise.all([import("@openheard/db"), import("./clerk-user")]);
+  const [{ createDb, membership, workspace }, { resolveClerkSession }] = await Promise.all([import("@openheard/db"), import("./clerk-user")]);
   const db = createDb();
   const host = request.headers.get("host") ?? "";
   const root = await rootDomain();
   const marketing = isMarketingHost(host, root);
   const slug = await workspaceSlugFromRequest(request);
 
-  const [wsResult, session] = await Promise.all([
+  const [wsResult, { session, authError }] = await Promise.all([
     db.select().from(workspace).where(eq(workspace.id, slug)).limit(1),
-    resolveClerkUser().then((user) => user ? { user } : null),
+    resolveClerkSession(),
   ]);
 
   let [ws] = wsResult;
@@ -111,12 +111,11 @@ async function resolveSession(request: Request) {
   // The shared demo login is nobody outside the demo, whatever memberships
   // happen to exist. One check here covers every server function at once.
   if (session && session.user.id === DEMO_ADMIN_ID && ws.id !== DEMO_WORKSPACE_ID) {
-    return { user: null, workspace: ws, marketing };
+    return { user: null, workspace: ws, marketing, authError };
   }
 
   let user: SessionUser | null = null;
   if (session) {
-    await db.insert(membership).values({ workspaceId: ws.id, userId: session.user.id, role: "member", notifyNewPost: session.user.emailVerified, notifyComment: session.user.emailVerified }).onConflictDoNothing();
     const [m] = await db
       .select({ role: membership.role })
       .from(membership)
@@ -124,7 +123,7 @@ async function resolveSession(request: Request) {
       .limit(1);
     user = { id: session.user.id, name: session.user.name, email: session.user.email, role: m?.role ?? "guest", image: session.user.image };
   }
-  return { user, workspace: ws, marketing };
+  return { user, workspace: ws, marketing, authError };
 }
 
 // Same resolution as sessionMiddleware, for raw route handlers.
@@ -141,7 +140,7 @@ export const sessionMiddleware = createMiddleware().server(async ({ next, reques
   return next({ context: await getSessionContext(request) });
 });
 
-export type Ctx = { user: SessionUser | null; workspace: Workspace; marketing: boolean };
+export type Ctx = { user: SessionUser | null; workspace: Workspace; marketing: boolean; authError: string | null };
 
 export function requireUser(user: SessionUser | null): SessionUser {
   if (!user) throw new Error("Sign in to do that");

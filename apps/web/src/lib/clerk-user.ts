@@ -2,6 +2,8 @@ import { auth, clerkClient } from "@clerk/tanstack-react-start/server";
 import { createDb, user } from "@openheard/db";
 import { and, eq, isNull } from "drizzle-orm";
 
+export class ClerkAccountLinkError extends Error {}
+
 // Keep feedback IDs stable: posts, votes and admin memberships reference them.
 // Only a verified Clerk primary email can claim an unlinked legacy account.
 export async function resolveClerkUser() {
@@ -20,8 +22,8 @@ export async function resolveClerkUser() {
   const address = email?.emailAddress.toLowerCase() ?? `${userId}@users.clerk.invalid`;
   const [existing] = await db.select().from(user).where(eq(user.email, address)).limit(1);
   if (existing) {
-    if (!verified) throw new Error("Verify your RangerOS email to link your existing feedback account");
-    if (existing.clerkId && existing.clerkId !== userId) throw new Error("Feedback account already linked");
+    if (!verified) throw new ClerkAccountLinkError("Verify your RangerOS email to link your existing feedback account");
+    if (existing.clerkId && existing.clerkId !== userId) throw new ClerkAccountLinkError("This feedback account is linked to another RangerOS identity. Contact your administrator.");
     await db.update(user).set({ clerkId: userId, emailVerified: true })
       .where(and(eq(user.id, existing.id), isNull(user.clerkId)));
   } else {
@@ -34,4 +36,15 @@ export async function resolveClerkUser() {
   const [resolved] = await db.select().from(user).where(eq(user.clerkId, userId)).limit(1);
   if (!resolved) throw new Error("Unable to link feedback account");
   return resolved;
+}
+
+// Expected linking refusals must not prevent reading the public board.
+export async function resolveClerkSession() {
+  try {
+    const user = await resolveClerkUser();
+    return { session: user ? { user } : null, authError: null as string | null };
+  } catch (error) {
+    if (!(error instanceof ClerkAccountLinkError)) throw error;
+    return { session: null, authError: error.message };
+  }
 }

@@ -89,6 +89,7 @@ function RootDocument() {
       <body>
         <ClerkProvider {...clerkConfig}>
         <ClerkSessionSync />
+        {data?.authError ? <p role="alert" className="border-b bg-card p-4 text-center text-sm">{data.authError} You can still browse feedback.</p> : null}
         {admin ? (
           <div className="h-dvh overflow-hidden">
             <Outlet />

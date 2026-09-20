@@ -12,7 +12,7 @@ Upstream base: `0b12956ed229bc6101d21a716b80257f1a605e65`.
 - KV: `RANGEROS_FEEDBACK_CACHE`
 - Single workspace: `default`; ROOT_DOMAIN stays empty.
 - Sender: `noreply@feedback.rangeros.com.au`; Cloudflare Email Service DNS configured on the feedback subdomain.
-- Admin ownership is provisioned explicitly. New Clerk identities are members; no first-user admin promotion.
+- Admin ownership is provisioned explicitly. New Clerk identities are guests until invited to the team; no first-user admin promotion.
 - Authentication uses the same production Clerk instance as RangerOS. Shared subdomain sessions are handled by Clerk. Legacy password/magic-link endpoints are retired.
 - Public posting and voting require an account. Avoid sensitive organisation/location details in requests.
 
@@ -39,7 +39,7 @@ in Workers. The workerd export condition ensures TanStack selects server history
 Admin signs in with RangerOS. A verified primary Clerk email links the provisioned
 owner account while preserving its ID and membership. Later requests use the unique
 Clerk ID. Username-only users get non-deliverable internal addresses and email
-notifications disabled. Existing memberships are never overwritten.
+notifications disabled (no implicit membership). Existing memberships are never overwritten.
 Email DNS/binding configuration does not prove inbox delivery.
 
 ## Verification (20 September 2026)
@@ -75,10 +75,14 @@ posts and votes. Only verified matching emails can link a legacy account.
 Clerk's production subdomain allowlist includes both `app.rangeros.com.au`
 and `feedback.rangeros.com.au`; the allowlist remains enabled.
 
-Validation: typecheck/build and 27 tests passed. An existing RangerOS test
+Validation: typecheck/build and 29 tests passed. An existing RangerOS test
 identity signed in through Clerk at the app origin; that same client/session
 refreshed at the feedback origin and authenticated using feedback cookies.
 The live vote server function added and removed a temporary vote; anonymous
 and forged tokens were rejected. D1 confirmed zero remaining votes before
 cleanup. Legacy auth returned 410; a member could not open the admin inbox.
 Browser automation was unavailable, so a rendered click-through was not verified.
+
+Server functions retain same-origin CSRF middleware. Visiting the public board
+does not create team membership. Account-link refusals show a public notice and
+allow guest browsing while authenticated writes remain denied.

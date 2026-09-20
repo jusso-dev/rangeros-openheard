@@ -14,7 +14,7 @@ vi.mock("@openheard/db", async () => ({
   user: (await import("../../../../packages/db/src/schema/auth")).user,
   createDb: () => state.db,
 }));
-import { resolveClerkUser } from "./clerk-user";
+import { resolveClerkUser, resolveClerkSession } from "./clerk-user";
 
 beforeEach(async () => {
   const client = createClient({ url: "file::memory:" });
@@ -47,7 +47,7 @@ describe("Clerk feedback identity", () => {
   });
   it("cannot claim an account already linked to another Clerk ID", async () => {
     await state.db.insert(user).values({ id: "existing", clerkId: "other", name: "Owner", email: "ranger@example.com" });
-    await expect(resolveClerkUser()).rejects.toThrow("already linked");
+    await expect(resolveClerkUser()).rejects.toThrow("linked to another");
     expect((await state.db.select().from(user).where(eq(user.id, "existing")))[0].clerkId).toBe("other");
   });
   it("creates members without first-user admin escalation and stays idempotent", async () => {
@@ -63,6 +63,15 @@ describe("Clerk feedback identity", () => {
     state.profile.emailAddresses = [];
     state.profile.primaryEmailAddressId = null;
     expect(await resolveClerkUser()).toMatchObject({ id: "user_clerk", role: "member", email: "user_clerk@users.clerk.invalid", emailVerified: false });
+  });
+  it("makes linking refusals readable as guest sessions without changing ownership", async () => {
+    await state.db.insert(user).values({ id: "existing", clerkId: "other", name: "Owner", email: "ranger@example.com" });
+    expect(await resolveClerkSession()).toMatchObject({ session: null, authError: expect.stringContaining("linked to another") });
+    expect((await state.db.select().from(user))[0].clerkId).toBe("other");
+  });
+  it("does not hide unexpected identity provider failures", async () => {
+    state.profile = null;
+    await expect(resolveClerkSession()).rejects.toThrow();
   });
   it("uses stable Clerk identity after an email change", async () => {
     await resolveClerkUser();
